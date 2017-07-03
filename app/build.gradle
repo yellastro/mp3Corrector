@@ -1,11 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.0"
+    compileSdkVersion 19
+    buildToolsVersion "19"
+	
+	
+}
 
     defaultConfig {
-        applicationId "com.mycompany.myapp"
+        applicationId "com.mycompany.mediatest2"
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
@@ -21,4 +24,28 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+	
+
+
 }
+
+allprojects {
+    repositories {
+        jcenter()
+		maven {
+            url "https://maven.google.com"
+        }
+    }
+}
+dependencies {
+	compile 'com.android.support:support-v4:+'
+}
+dependencies {
+	compile 'com.android.support:appcompat-v7:25.4.0'
+}
+
+dependencies {
+	compile 'com.android.support:design:+'
+}
+
