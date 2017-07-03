@@ -28,8 +28,8 @@ public class MyCursorAdapter extends CursorAdapter
 
     public void bindView( View view, Context context, Cursor cursor) {
 		
-		TextView textViewTitle = (TextView) view.findViewById(R.id.label1);
-		TextView txtViewLabel =(TextView) view.findViewById(R.id.label2);
+		TextView textViewTitle = (TextView) view.findViewById(R.id.name);
+		TextView txtViewLabel =(TextView) view.findViewById(R.id.autor_list);
 		TextView autorView=(TextView) view.findViewById(R.id.autor_list);
 		String title = cursor.getString( cursor.getColumnIndex( MediaStore.Audio.Media.TITLE ) );
 		String autor = cursor.getString( cursor.getColumnIndex( MediaStore.Audio.Media.ARTIST ) );
