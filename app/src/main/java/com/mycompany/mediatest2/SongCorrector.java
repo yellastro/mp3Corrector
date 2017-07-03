@@ -17,7 +17,7 @@ import java.util.*;
 public class SongCorrector
 {
 	static Cursor cursor;
-	static LikeCursorAdapter adapter;
+	static BaseAdapter adapter;
 	static String titel,artist,fileNames,newFileName,folder;
 	static File file, newFile;
 	static ArrayList<String> artists=new ArrayList<>();
@@ -31,7 +31,7 @@ public class SongCorrector
 		String[] from = {
 			MediaStore.MediaColumns.TITLE,MediaStore.MediaColumns.DATA};
 		int[] to = {
-			R.id.label1,R.id.label2};
+			R.id.name,R.id.autor_list};
 
 		cursor = activity.getContentResolver().query(
 			MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -49,7 +49,7 @@ public class SongCorrector
 		/*Toast.makeText(activity,//Integer.toString(
 					   tables,Toast.LENGTH_LONG).show();
 		
-		//}*/
+		//}*//*
 		ListItem item;
 		cursor.moveToFirst();
 		while(cursor.moveToNext())
@@ -71,25 +71,25 @@ public class SongCorrector
 				{
 					albums.add(ssong);
 					item.addChild(new ListItem(ssong));
-				}*/
+				}
 			
 			ssong=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
 			 //item=item.getChilds().get(i);
 		
 				//albums.add(ssong);
-				item.addChild(new ListItem(ssong));
-			
+				//item.addChild(new ListItem(ssong));
+			artists.add(ssong);
 		}
-			
+			*/
 		//folder=getFolder(ssong);
 		/*if(folders.indexOf(
 		ListItem it=new ListItem(folder);
 		it.addChild(new ListItem(ssong));
 		*/
-		
-		return new LikeCursorAdapter(activity, items);
-		//return adapter = new MyCursorAdapter(activity,
-						//					 cursor,R.layout.rowlayout);
+		//return new AdresserAdapter(activity, artists);
+		//return new LikeCursorAdapter(activity, items);
+		return adapter = new MyCursorAdapter(activity,
+						 cursor,R.layout.rowlayout);
 	}
 	
 	static void initInfo(int position)

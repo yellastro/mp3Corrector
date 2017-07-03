@@ -47,8 +47,8 @@ public class LikeCursorAdapter extends BaseAdapter
 		if (view == null)
 			view = mLayoutInflater.inflate(R.layout.rowlayout, null);             
 
-		TextView textViewTitle = (TextView) view.findViewById(R.id.label1);
-		TextView txtViewLabel =(TextView) view.findViewById(R.id.label2);
+		TextView textViewTitle = (TextView) view.findViewById(R.id.name);
+		TextView txtViewLabel =(TextView) view.findViewById(R.id.other);
 		TextView autorView=(TextView) view.findViewById(R.id.autor_list);
 		
 		ListItem ListItem = hierarchyArray.get(position);
