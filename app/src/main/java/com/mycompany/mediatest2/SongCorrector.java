@@ -49,20 +49,20 @@ public class SongCorrector
 		/*Toast.makeText(activity,//Integer.toString(
 					   tables,Toast.LENGTH_LONG).show();
 		
-		//}*//*
-		ListItem item;
+		//}*/
+		/*ListItem item;
 		cursor.moveToFirst();
 		while(cursor.moveToNext())
 		{
 			
 			String ssong=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-			int i=artists.indexOf(ssong);
-			if(i<0)
+			/*int i=artists.indexOf(ssong);
+			if(i<0)*l
 			{
 				artists.add(ssong);
 				items.add(new ListItem(ssong));
 			}
-			item=items.get(i);
+			//item=items.get(i);
 	
 				/*ssong=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM));
 				
@@ -87,9 +87,9 @@ public class SongCorrector
 		it.addChild(new ListItem(ssong));
 		*/
 		//return new AdresserAdapter(activity, artists);
-		//return new LikeCursorAdapter(activity, items);
-		return adapter = new MyCursorAdapter(activity,
-						 cursor,R.layout.rowlayout);
+		return new LikeCursorAdapter(activity);
+		//return adapter = new MyCursorAdapter(activity,
+					//	 cursor,R.layout.rowlayout);
 	}
 	
 	static void initInfo(int position)

@@ -1,8 +1,9 @@
 package com.mycompany.mediatest2;
 import android.content.*;
+import android.database.*;
+import android.provider.*;
 import android.view.*;
 import android.widget.*;
-import com.mycompany.mediatest2.*;
 import com.mycompany.mediatest2.ierarhy.*;
 import java.util.*;
 
@@ -12,18 +13,68 @@ public class LikeCursorAdapter extends BaseAdapter
 
 	private ArrayList<ListItem> hierarchyArray; // 2
 
+	private ArrayList<String> artists;
 	private ArrayList<ListItem> originalListItems; // 3
 	private LinkedList<ListItem> openListItems; // 4
 
+	private Cursor cursor;
 
     // Default constructor
-    public LikeCursorAdapter(Context ctx, ArrayList<ListItem> ListItems) {  
+    public LikeCursorAdapter(Context ctx //ArrayList<ListItem> ListItems) {  
+		){
+			
+		cursor = ctx.getContentResolver().query(
+			MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+			null,
+			"_data LIKE ?",
+			new String[] {"/storage/sdcard0/Music/sets%"},
+			MediaStore.Audio.Media.DATA);
+		
 		mLayoutInflater = LayoutInflater.from(ctx);
-		originalListItems = ListItems; 
+		originalListItems = new ArrayList<>(); 
 
 		hierarchyArray = new ArrayList<ListItem>();
 		openListItems = new LinkedList<ListItem>(); 
 
+		ListItem file,mainf;
+		String adress;
+		artists = new ArrayList<>();
+		cursor.moveToFirst();
+		adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+		mainf =new ListItem(adress);
+		originalListItems.add(mainf);
+		artists.add(adress);
+		
+		while(adress.lastIndexOf("/")>1)
+		{
+			adress=FolderReader.getFolder(adress);
+			file =new ListItem(adress);
+			originalListItems.add(file);
+			file.addChild(mainf);
+			mainf=file;
+			artists.add(adress);
+		}
+		
+		
+		
+		
+		while(cursor.moveToNext())
+		{
+
+			adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+			ListItem topFile =new ListItem(adress);
+			originalListItems.add(topFile);
+			artists.add(adress);
+			scanData(adress,topFile);
+			
+		
+			//artists.add(ssong);
+			
+			
+			//originalListItems.add(new ListItem(adress));
+		}
+		
+		
 		generateHierarchy(); // 5
 	}  
 
@@ -69,6 +120,33 @@ public class LikeCursorAdapter extends BaseAdapter
 			hierarchyArray.add(i);
 			if (openListItems.contains(i))
 				generateList(i.getChilds());
+		}
+	}
+	
+	private void scanData(String adress,ListItem mainf)
+	{
+		//adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
+		
+		adress=FolderReader.getFolder(adress);
+		int i=artists.indexOf(adress);
+		if(i>-1)
+		{
+			
+			//
+			ListItem file=originalListItems.get(i);
+			file.addChild(mainf);
+			//mainf=file;
+
+		}
+		else
+		{
+			ListItem file =new ListItem(adress);
+			originalListItems.add(file);
+			artists.add(adress);
+			//ListItem mainf =new ListItem(adress);
+			//originalListItems.add(mainf);
+			file.addChild(mainf);
+			scanData(adress,file);
 		}
 	}
 }
