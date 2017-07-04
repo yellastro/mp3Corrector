@@ -16,7 +16,9 @@ public class LikeCursorAdapter extends BaseAdapter
 	private ArrayList<String> artists;
 	private SearchingList originalListItems; // 3
 	private LinkedList<ListItem> openListItems; // 4
-
+	private LinkedList<ListItem> topLevelList;
+	
+	
 	private Cursor cursor;
 
     // Default constructor
@@ -35,6 +37,7 @@ public class LikeCursorAdapter extends BaseAdapter
 
 		hierarchyArray = new ArrayList<ListItem>();
 		openListItems = new LinkedList<ListItem>(); 
+		topLevelList = new LinkedList<ListItem>();
 
 		ListItem file,mainf;
 		String adress,title;
@@ -58,7 +61,7 @@ public class LikeCursorAdapter extends BaseAdapter
 			mainf=file;
 			//artists.add(adress);
 		}
-		
+		topLevelList.add(mainf);
 		
 		
 		
@@ -117,10 +120,10 @@ public class LikeCursorAdapter extends BaseAdapter
 	
 	private void generateHierarchy() {
 		hierarchyArray.clear(); // 1
-		generateList(originalListItems); // 2
+		generateList(topLevelList); // 2
 	}
 
-	private void generateList(ArrayList ListItems) { // 3
+	private void generateList(List ListItems) { // 3
 		for (ListItem i : ListItems) {
 			hierarchyArray.add(i);
 			if (openListItems.contains(i))
@@ -148,12 +151,24 @@ public class LikeCursorAdapter extends BaseAdapter
 			String titl=FolderReader.getName(adress);
 			ListItem file =new ListItem(titl,adress);
 			originalListItems.add(file);
+			//openListItems.add(file);
 			//artists.add(adress);
 			//ListItem mainf =new ListItem(adress);
 			//originalListItems.add(mainf);
 			file.addChild(mainf);
 			scanData(adress,file);
 		}
+		
+		
 	}
+	
+	public void clickOnItem (int position) {
+		ListItem i = hierarchyArray.get(position);
+		if (!openListItems.remove(i)) 
+		{openListItems.add(i);}
+		generateHierarchy();
+		notifyDataSetChanged();
+	}
+	
 }
 

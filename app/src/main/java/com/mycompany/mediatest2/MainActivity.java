@@ -58,8 +58,8 @@ public class MainActivity extends Activity
 		adapter = new SimpleCursorAdapter(this,
 			  android.R.layout.two_line_list_item, cursor, from, to);
 */
-		
-		listView.setAdapter(songcorrector.loadBase(this));
+		adapter=new LikeCursorAdapter(this);
+		listView.setAdapter(adapter);
 
 			//"_data = ?",
 			//new String[] {"storage/sdcard0/Music/sets"},
@@ -68,7 +68,7 @@ public class MainActivity extends Activity
 		AdapterView.OnItemClickListener itemClickListener = 
 			new AdapterView.OnItemClickListener()
 			{ public void onItemClick(AdapterView<?> listView, View v, int position, long id)
-				{showExtra(position);}};
+				{adapter.clickOnItem(position);}};
 
 		listView.setOnItemClickListener(itemClickListener);
 	}
