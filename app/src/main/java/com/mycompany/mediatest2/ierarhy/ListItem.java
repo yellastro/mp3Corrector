@@ -6,17 +6,23 @@ import java.util.*;
 public class ListItem
  {
 
-	private String title;
+	private String title,adress;
 	private ArrayList<ListItem> childs;
 
-	public ListItem (String title) { // 1
+	public ListItem (String title,String adf) { // 1
 		this.title = title;
+		this.adress=adf;
 		childs = new ArrayList<ListItem>();
 	}
 
 	//@Override
 	public String getTitle() { // 2
 		return title;
+	}
+	
+	public String getAdres()
+	{
+		return adress;
 	}
 
 	//@Override

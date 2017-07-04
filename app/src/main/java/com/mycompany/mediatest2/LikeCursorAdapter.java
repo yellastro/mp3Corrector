@@ -14,7 +14,7 @@ public class LikeCursorAdapter extends BaseAdapter
 	private ArrayList<ListItem> hierarchyArray; // 2
 
 	private ArrayList<String> artists;
-	private ArrayList<ListItem> originalListItems; // 3
+	private SearchingList originalListItems; // 3
 	private LinkedList<ListItem> openListItems; // 4
 
 	private Cursor cursor;
@@ -31,28 +31,32 @@ public class LikeCursorAdapter extends BaseAdapter
 			MediaStore.Audio.Media.DATA);
 		
 		mLayoutInflater = LayoutInflater.from(ctx);
-		originalListItems = new ArrayList<>(); 
+		originalListItems = new SearchingList(); 
 
 		hierarchyArray = new ArrayList<ListItem>();
 		openListItems = new LinkedList<ListItem>(); 
 
 		ListItem file,mainf;
-		String adress;
+		String adress,title;
 		artists = new ArrayList<>();
 		cursor.moveToFirst();
+		
 		adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-		mainf =new ListItem(adress);
+		title=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
+		
+		mainf =new ListItem(title,adress);
 		originalListItems.add(mainf);
-		artists.add(adress);
+		//artists.add(adress);
 		
 		while(adress.lastIndexOf("/")>1)
 		{
 			adress=FolderReader.getFolder(adress);
-			file =new ListItem(adress);
+			title=FolderReader.getName(adress);
+			file =new ListItem(title,adress);
 			originalListItems.add(file);
 			file.addChild(mainf);
 			mainf=file;
-			artists.add(adress);
+			//artists.add(adress);
 		}
 		
 		
@@ -61,10 +65,11 @@ public class LikeCursorAdapter extends BaseAdapter
 		while(cursor.moveToNext())
 		{
 
+			title=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
 			adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-			ListItem topFile =new ListItem(adress);
+			ListItem topFile =new ListItem(title,adress);
 			originalListItems.add(topFile);
-			artists.add(adress);
+			//artists.add(adress);
 			scanData(adress,topFile);
 			
 		
@@ -115,7 +120,7 @@ public class LikeCursorAdapter extends BaseAdapter
 		generateList(originalListItems); // 2
 	}
 
-	private void generateList(ArrayList<ListItem> ListItems) { // 3
+	private void generateList(ArrayList ListItems) { // 3
 		for (ListItem i : ListItems) {
 			hierarchyArray.add(i);
 			if (openListItems.contains(i))
@@ -128,7 +133,7 @@ public class LikeCursorAdapter extends BaseAdapter
 		//adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 		
 		adress=FolderReader.getFolder(adress);
-		int i=artists.indexOf(adress);
+		int i=originalListItems.searchItem(adress);
 		if(i>-1)
 		{
 			
@@ -140,9 +145,10 @@ public class LikeCursorAdapter extends BaseAdapter
 		}
 		else
 		{
-			ListItem file =new ListItem(adress);
+			String titl=FolderReader.getName(adress);
+			ListItem file =new ListItem(titl,adress);
 			originalListItems.add(file);
-			artists.add(adress);
+			//artists.add(adress);
 			//ListItem mainf =new ListItem(adress);
 			//originalListItems.add(mainf);
 			file.addChild(mainf);
