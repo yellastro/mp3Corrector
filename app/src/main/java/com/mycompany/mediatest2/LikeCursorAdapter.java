@@ -11,33 +11,34 @@ public class LikeCursorAdapter extends BaseAdapter
 {
 	private LayoutInflater mLayoutInflater;
 
-	private ArrayList<ListItem> hierarchyArray; // 2
+	private ArrayList<Item> hierarchyArray; // 2
 
 	private ArrayList<String> artists;
 	private SearchingList originalListItems; // 3
 	private LinkedList<ListItem> openListItems; // 4
-	private LinkedList<ListItem> topLevelList;
-	
+	private LinkedList<Item> topLevelList;
+	private Context ctxt;
+	private String rootChose="/storage/sdcard0/Music/sets";
 	
 	private Cursor cursor;
 
     // Default constructor
     public LikeCursorAdapter(Context ctx //ArrayList<ListItem> ListItems) {  
 		){
-			
+			ctxt=ctx;
 		cursor = ctx.getContentResolver().query(
 			MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 			null,
 			"_data LIKE ?",
-			new String[] {"/storage/sdcard0/Music/sets%"},
+			new String[] {rootChose+"%"},
 			MediaStore.Audio.Media.DATA);
 		
 		mLayoutInflater = LayoutInflater.from(ctx);
 		originalListItems = new SearchingList(); 
 
-		hierarchyArray = new ArrayList<ListItem>();
-		openListItems = new LinkedList<ListItem>(); 
-		topLevelList = new LinkedList<ListItem>();
+		hierarchyArray = new ArrayList<>();
+		openListItems = new LinkedList<>(); 
+		topLevelList = new LinkedList<>();
 
 		ListItem file,mainf;
 		String adress,title;
@@ -47,21 +48,23 @@ public class LikeCursorAdapter extends BaseAdapter
 		adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 		title=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
 		
-		mainf =new ListItem(title,adress);
-		originalListItems.add(mainf);
+		
+		Item songit =new SongItem(title,adress,
+			 cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
+		originalListItems.add(songit);
 		//artists.add(adress);
 		
-		while(adress.lastIndexOf("/")>1)
+		while(!adress.equals(rootChose))
 		{
 			adress=FolderReader.getFolder(adress);
 			title=FolderReader.getName(adress);
 			file =new ListItem(title,adress);
 			originalListItems.add(file);
-			file.addChild(mainf);
-			mainf=file;
+			file.addChild(songit);
+			songit=file;
 			//artists.add(adress);
 		}
-		topLevelList.add(mainf);
+		topLevelList.add(songit);
 		
 		
 		
@@ -70,7 +73,8 @@ public class LikeCursorAdapter extends BaseAdapter
 
 			title=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
 			adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
-			ListItem topFile =new ListItem(title,adress);
+			SongItem topFile =new SongItem(title,adress,
+					  cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
 			originalListItems.add(topFile);
 			//artists.add(adress);
 			scanData(adress,topFile);
@@ -109,10 +113,14 @@ public class LikeCursorAdapter extends BaseAdapter
 		TextView textViewTitle = (TextView) view.findViewById(R.id.name);
 		TextView txtViewLabel =(TextView) view.findViewById(R.id.other);
 		TextView autorView=(TextView) view.findViewById(R.id.autor_list);
+		ImageView img=(ImageView) view.findViewById(R.id.icon);
 		
-		ListItem ListItem = hierarchyArray.get(position);
+		Item ListItem = hierarchyArray.get(position);
 		//ListItem ListItem=originalListItems.get(position);
 		textViewTitle.setText(ListItem.getTitle());
+		txtViewLabel.setText(ListItem.getAdres());
+		autorView.setText(ListItem.getExtra());
+		img.setImageResource(ListItem.getIconResource());
 		/*title.setCompoundDrawablesWithIntrinsicBounds*/
 		//(ListItem.getIconResource(), 0, 0, 0); // 6
 		return view;  
@@ -124,14 +132,20 @@ public class LikeCursorAdapter extends BaseAdapter
 	}
 
 	private void generateList(List ListItems) { // 3
-		for (ListItem i : ListItems) {
+		
+		int lastf;
+		for (Item i : ListItems) {
+			
 			hierarchyArray.add(i);
 			if (openListItems.contains(i))
-				generateList(i.getChilds());
+			{
+				ListItem L=(ListItem)i;
+				generateList(L.getChilds());
+			}
 		}
 	}
 	
-	private void scanData(String adress,ListItem mainf)
+	private void scanData(String adress,Item mainf)
 	{
 		//adress=cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA));
 		
@@ -141,7 +155,7 @@ public class LikeCursorAdapter extends BaseAdapter
 		{
 			
 			//
-			ListItem file=originalListItems.get(i);
+			ListItem file=(ListItem)originalListItems.get(i);
 			file.addChild(mainf);
 			//mainf=file;
 
@@ -163,12 +177,24 @@ public class LikeCursorAdapter extends BaseAdapter
 	}
 	
 	public void clickOnItem (int position) {
-		ListItem i = hierarchyArray.get(position);
-		if (!openListItems.remove(i)) 
-		{openListItems.add(i);}
+		Item i = hierarchyArray.get(position);
+		if(i.getClass()==SongItem.class)
+		{
+			showExtra(position);
+		}
+		else{ListItem L=(ListItem)i;
+		if (!openListItems.remove(L)) 
+		{openListItems.add(L);}
 		generateHierarchy();
 		notifyDataSetChanged();
+		}
 	}
 	
+	void showExtra(int position)
+	{
+		Intent intent=new Intent(ctxt,SongExt.class);
+		intent.putExtra(SongExt.EXTRA_POSITION, (int)position);
+		ctxt.startActivity(intent);
+	}
 }
 
